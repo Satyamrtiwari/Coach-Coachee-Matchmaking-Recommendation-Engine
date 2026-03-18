@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enablerz | Coach Matchmaker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-grad: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #8b5cf6;
+            --secondary: #6366f1;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-grad);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #a78bfa, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        option {
+            background-color: #0f172a; /* Solid dark background for Windows dropdowns */
+            color: #f8fafc;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Results Area */
+        .match-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+            animation: slideUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .coach-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .match-score {
+            background: rgba(139, 92, 246, 0.2);
+            color: #c4b5fd;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #34d399, #10b981);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        .explanation {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-sub);
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: var(--primary);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Left Panel: Form -->
+    <div class="glass-panel">
+        <h1>Find Your Coach</h1>
+        <p style="color: var(--text-sub); margin-bottom: 25px; font-size: 0.9rem;">Tell us what you are looking for.</p>
+        
+        <form id="matchForm">
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="name" value="Candidate" required>
+            </div>
+            <div class="form-group">
+                <label>Industry</label>
+                <select id="industry">
+                    <option value="Technology">Technology</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Startups">Startups</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Role Level</label>
+                <select id="role_level">
+                    <option value="Associate">Associate</option>
+                    <option value="Mid-Level" selected>Mid-Level</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Director">Director</option>
+                    <option value="Executive">Executive</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Preferred Coaching Style</label>
+                <select id="style">
+                    <option value="Directive">Directive (Authoritative)</option>
+                    <option value="Facilitative">Facilitative (Guiding)</option>
+                    <option value="Transformational" selected>Transformational (Inspiring)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Language</label>
+                <select id="language">
+                    <option value="English">English</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Mandarin">Mandarin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Goals (Comma-separated)</label>
+                <textarea id="goals" rows="2" required>Improve system design, Transition to engineering manager</textarea>
+            </div>
+            <div class="form-group">
+                <label>Areas of Development (Comma-separated)</label>
+                <textarea id="dev_areas" rows="2" required>Agile Methodologies, Public Speaking</textarea>
+            </div>
+            
+            <button type="submit">Deploy Matcher AI 🚀</button>
+        </form>
+    </div>
+
+    <!-- Right Panel: Results -->
+    <div class="glass-panel" style="display: flex; flex-direction: column;">
+        <h2>Top 5 Recommendations</h2>
+        
+        <div id="loader" class="loader">
+            Searching 10,000+ Profiles in Milliseconds...
+        </div>
+
+        <div id="results" style="flex: 1; overflow-y: auto;">
+            <p style="color: var(--text-sub); text-align: center; margin-top: 50px;">
+                Submit your profile to see the AI magic.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('matchForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const resultsDiv = document.getElementById('results');
+        const loader = document.getElementById('loader');
+        
+        resultsDiv.innerHTML = '';
+        loader.style.display = 'block';
+
+        // Parse inputs
+        const parseList = (str) => str.split(',').map(s => s.trim()).filter(s => s);
+
+        const payload = {
+            id: "coachee_custom",
+            name: document.getElementById('name').value,
+            industry: document.getElementById('industry').value,
+            role_level: document.getElementById('role_level').value,
+            preferred_coaching_style: document.getElementById('style').value,
+            language: document.getElementById('language').value,
+            goals: parseList(document.getElementById('goals').value),
+            development_areas: parseList(document.getElementById('dev_areas').value)
+        };
+
+        try {
+            const response = await fetch('/api/v1/match', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            
+            loader.style.display = 'none';
+            
+            if (data.top_matches && data.top_matches.length > 0) {
+                data.top_matches.forEach((match, index) => {
+                    const coach = match.coach;
+                    const delay = index * 0.15; // staggered animation
+                    
+                    const card = document.createElement('div');
+                    card.className = 'match-card';
+                    card.style.animationDelay = `${delay}s`;
+                    
+                    card.innerHTML = `
+                        <div class="match-header">
+                            <div class="coach-name">${index + 1}. ${coach.name}</div>
+                            <div class="match-score">${match.match_score}% Match</div>
+                        </div>
+                        <div class="progress-bg">
+                            <div class="progress-bar" style="width: ${match.match_score}%; background: ${match.match_score > 70 ? 'linear-gradient(to right, #34d399, #10b981)' : 'linear-gradient(to right, #fbbf24, #f59e0b)'}"></div>
+                        </div>
+                        <div class="explanation">
+                            ✨ <strong>AI Reasoning:</strong> ${match.explanation.summary}
+                        </div>
+                        <div class="badges">
+                            <span class="badge">Style: ${coach.coaching_style}</span>
+                            <span class="badge">Exp: ${coach.years_of_experience} yrs</span>
+                            <span class="badge">${coach.languages.join(', ')}</span>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(card);
+                });
+            } else {
+                resultsDiv.innerHTML = '<p style="color: red;">No matches found. Try broadening your criteria.</p>';
+            }
+
+        } catch (err) {
+            console.error(err);
+            loader.style.display = 'none';
+            resultsDiv.innerHTML = '<p style="color: red;">Error connecting to the Matcher API.</p>';
+        }
+    });
+</script>
+
+</body>
+</html>

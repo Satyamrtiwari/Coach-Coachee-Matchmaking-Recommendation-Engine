@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+import os
 from app.core.config import settings
 from app.api.routes import router as api_router
 from app.models.database import db
@@ -16,6 +19,15 @@ async def startup_event():
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+# Mount the static folder to serve assets/HTML
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 @app.get("/")
-def read_root():
+async def read_root():
+    # Attempt to return the beautiful frontend index.html
+    html_path = os.path.join(static_dir, "index.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path)
     return {"message": f"Welcome to {settings.PROJECT_NAME} API. Visit /docs for the swagger playground."}
