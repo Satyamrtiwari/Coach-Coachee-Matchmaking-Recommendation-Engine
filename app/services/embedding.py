@@ -9,8 +9,7 @@ class EmbeddingService:
         self.coach_matrix = None
         self.coach_ids = []
 
-    def _get_coach_text(self, coach: Coach) -> str:
-        # Combine relevant text fields for embedding
+    def _get_coach_text(self, coach: Coach) -> str:        # Combine reliviant text fields for embedding
         parts = coach.expertise_areas + coach.industries_served + coach.certifications
         return " ".join(parts)
 
@@ -31,9 +30,8 @@ class EmbeddingService:
             return {}
             
         coachee_text = self._get_coachee_text(coachee)
-        coachee_vec = self.vectorizer.transform([coachee_text])
+        coachee_vec = self.vectorizer.transform([coachee_text])    # Calcuulate cosine similarity between coachee and all coaches
         
-        # Calculate cosine similarity between coachee and all coaches
         similarities = cosine_similarity(coachee_vec, self.coach_matrix).flatten()
         
         return {coach_id: float(score) for coach_id, score in zip(self.coach_ids, similarities)}

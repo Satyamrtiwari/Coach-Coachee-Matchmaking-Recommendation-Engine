@@ -26,7 +26,7 @@ class MatcherService:
             sim_score = similarities.get(coach.id, 0.0)
             final_score, explanation = calculate_match(coachee, coach, sim_score)
             
-            # Optional: We might want to filter out anyone without language match hard limit, 
+        
             # but for soft ranking we just include them.
             
             result = MatchResult(
@@ -36,7 +36,7 @@ class MatcherService:
             )
             results.append(result)
             
-        # Sort by match_score descending
+        # Sort by match score descending
         results.sort(key=lambda x: x.match_score, reverse=True)
         
         return results[:top_k]
